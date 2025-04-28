@@ -12,7 +12,7 @@
 [Encoding]=url-utf-8
 [MinAppVersionMac]=1.8.6
 [MinAppVersionWin]=3.22
-[Version]=0.3.0
+[Version]=0.4.0
 
 [ParserScriptAlbum]=...
 #debug "on" "audible-api-album.txt"

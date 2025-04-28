@@ -1,5 +1,8 @@
 # Changelog — Audible API Tag Source for Mp3tag
 
+## 0.4.0 (2024-12-29) @Florian
+- Added Tag Sources for audible.co.uk
+
 ## 0.3.0 (2024-11-06) @Florian
 
 - Added Tag Source to directly search by ASIN.
