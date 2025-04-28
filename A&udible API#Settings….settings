@@ -11,6 +11,13 @@
     },
     {
       "type": "bool",
+      "key": "singleAlbumArtist",
+      "title": "Use single album artist for all album useful for plex because plex does not support multiple album artists",
+      "description": "Use single album artist for all album useful for plex because plex does not support multiple album artists",
+      "default": false
+    },
+    {
+      "type": "bool",
       "key": "singleGenre",
       "title": "Add single genre only",
       "description": "Enable to add only the first genre.",

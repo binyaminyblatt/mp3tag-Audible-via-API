@@ -7,12 +7,12 @@
 [WordSeperator]=+
 [SearchBy]=ASIN||%ASIN%||%s
 [PreviewUrl]=https://www.audible.fr/pd/%s
-[AlbumUrl]=https://api.audible.fr/1.0/catalog/products/%s?response_groups=category_ladders,contributors,media,product_desc,product_attrs,product_extended_attrs,rating,series&image_sizes=500,1000
+[AlbumUrl]=https://api.audible.fr/1.0/catalog/products/%s?response_groups=category_ladders,contributors,media,product_desc,product_attrs,product_extended_attrs,rating,series,product_details&image_sizes=700,1000,500,100
 [Settings]=A&udible API#Settings….settings
 [Encoding]=url-utf-8
 [MinAppVersionMac]=1.8.6
 [MinAppVersionWin]=3.22
-[Version]=0.5.0
+[Version]=0.5.9
 
 [ParserScriptAlbum]=...
 #debug "on" "audible-api-album.txt"
@@ -26,10 +26,20 @@ json_select "title"
 IfNot ""
 
     OutputTo "coverurl"
-    json_select_object "product_images"
-    json_select "1000"
-    SayRest
-    json_unselect_object
+	json_select_object "product_images"
+	json_select "1000"
+	IfNot ""
+		SayRest
+	Else
+		json_select "700"
+		IfNot ""
+			SayRest
+		Else
+			json_select "500"
+			SayRest
+		EndIf
+	EndIf
+	json_unselect_object
 
     OutputTo "ASIN"
     json_select "asin"
@@ -44,9 +54,25 @@ IfNot ""
     json_select "subtitle"
     SayRest
 
-    OutputTo "ALBUMARTIST"
-    json_select_many "authors" "name" ", "
-    SayRest
+    # This is the code i edited since plex cant handle multple ALBUMARTIST's i moved it to ALBUMARTISTS and ALBUMARTIST is just the first author 
+    # i added the setting singleAlbumArtist to make the to make ALBUMARTIST the first author for plex like apps and set the default to false for backwards compatibility
+    IfVar "singleAlbumArtist" "true"
+        OutputTo "ALBUMARTISTS"
+        json_select_many "authors" "name" ", "
+        SayRest
+
+        OutputTo "ALBUMARTIST"
+        json_foreach "authors"
+            IfNotOutput "ALBUMARTIST"
+                json_select "name"
+                SayRest
+            EndIf
+        json_foreach_end
+    Else
+        OutputTo "ALBUMARTIST"
+        json_select_many "authors" "name" ", "
+        SayRest
+    EndIf
 
     OutputTo "COMPOSER"
     json_select_many "narrators" "name" ", "
@@ -95,11 +121,23 @@ IfNot ""
     json_foreach "category_ladders"
     IfVar "singleGenre" "true"
         json_foreach "ladder"
-            IfNotOutput "GENRE"
-                json_select "name"
-                SayRest
-            EndIf
-        json_foreach_end
+			IfNotOutput "GENRE"
+				json_select "name"
+				SayRest
+			Else
+				IfNotOutput "TMP_GENRE1"
+					OutputTo "TMP_GENRE1"
+					json_select "name"
+					SayRest
+				Else
+					IfNotOutput "TMP_GENRE2"
+						OutputTo "TMP_GENRE2"
+						json_select "name"
+						SayRest
+					EndIf
+				EndIf
+			EndIf
+		json_foreach_end
     Else
         IfOutput "GENRE"
             IfVar "delimiter" "\\\\"
@@ -134,6 +172,9 @@ IfNot ""
     SayRest
     json_unselect_object
     json_unselect_object
+	
+	OutputTo "RATING WMP"
+	SayOutput "RATING"
 
     OutputTo "COMMENT"
     json_select "publisher_summary"
@@ -156,7 +197,13 @@ IfNot ""
     SayRest
 
     OutputTo "ARTIST"
-    SayOutput "ALBUMARTIST"
+    # once again this is the code i edited since plex cant handle multple ALBUMARTIST's i moved it to ALBUMARTISTS and ALBUMARTIST is just the first author
+    # i added the setting singleAlbumArtist to make the to make ALBUMARTIST the first author for plex like apps and set the default to false for backwards compatibility
+    IfVar  "singleAlbumArtist" "true"
+        SayOutput "ALBUMARTISTS"
+    Else
+        SayOutput "ALBUMARTIST"
+    EndIf
     IfVar "narratorInArtist" "true"
         Say ", "
         SayOutput "COMPOSER"
@@ -180,5 +227,13 @@ IfNot ""
 
     OutputTo "MOVEMENT"
     SayOutput "SERIES-PART"
+	
+	
+	OutputTo "LANGUAGE"
+	json_select "language"
+	SayRest
 
+	OutputTo "COPYRIGHT"
+	json_select "copyright"
+	SayRest
 EndIf

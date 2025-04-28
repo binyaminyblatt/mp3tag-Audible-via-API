@@ -1,5 +1,12 @@
 # Changelog — Audible API Tag Source for Mp3tag
 
+## 0.5.9 (2025-04-16) @bblatt
+- Added search by file name (neads testing).
+- refactored ASIN code to use a single file in beta for now use Search by ASIN Beta to try it out.
+- fixed copyright field.
+- fixed the rating field.
+- fixed the language field.
+
 ## 0.5.0 (2025-04-16) @Florian
 - Added Tag Sources for audible.ca
 - Added Tag Sources for audible.fr

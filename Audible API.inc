@@ -6,12 +6,11 @@
 [Name]=Audible API
 [WordSeperator]=+
 [IndexFormat]=%_coverurl%|%_preview%|%_url%|%Album%|%Author%|%Narrator%|%Duration%|%Year%|%Language%
-[SearchBy]=%artist% $regexp(%album%,'[- ]+cd ?\d+$',,1)
 [Settings]=A&udible API#Settings….settings
 [Encoding]=url-utf-8
 [MinAppVersionMac]=1.8.6
 [MinAppVersionWin]=3.22
-[Version]=0.5.0
+[Version]=0.5.9
 
 [ParserScriptIndex]=...
 #debug "on" "audible-api-index.txt"
@@ -78,7 +77,17 @@ json_select_object "product"
 OutputTo "coverurl"
 json_select_object "product_images"
 json_select "1000"
-SayRest
+IfNot ""
+    SayRest
+Else
+    json_select "500"
+    IfNot ""
+        SayRest
+    Else
+        json_select "100"
+        SayRest
+    EndIf
+EndIf
 json_unselect_object
 
 OutputTo "ASIN"
@@ -94,9 +103,25 @@ OutputTo "SUBTITLE"
 json_select "subtitle"
 SayRest
 
-OutputTo "ALBUMARTIST"
-json_select_many "authors" "name" ", "
-SayRest
+# This is the code i edited since plex cant handle multple ALBUMARTIST's i moved it to ALBUMARTISTS and ALBUMARTIST is just the first author 
+# i added the setting singleAlbumArtist to make the to make ALBUMARTIST the first author for plex like apps and set the default to false for backwards compatibility
+IfVar "singleAlbumArtist" "true"
+    OutputTo "ALBUMARTISTS"
+    json_select_many "authors" "name" ", "
+    SayRest
+
+    OutputTo "ALBUMARTIST"
+    json_foreach "authors"
+        IfNotOutput "ALBUMARTIST"
+            json_select "name"
+            SayRest
+        EndIf
+    json_foreach_end
+Else
+    OutputTo "ALBUMARTIST"
+    json_select_many "authors" "name" ", "
+    SayRest
+EndIf
 
 OutputTo "COMPOSER"
 json_select_many "narrators" "name" ", "
@@ -141,6 +166,10 @@ Else
     EndIf
 Endif
 
+
+KillTag "GENRE"
+KillTag "TMP_GENRE1"
+KillTag "TMP_GENRE2"
 OutputTo "GENRE"
 json_foreach "category_ladders"
 IfVar "singleGenre" "true"
@@ -148,7 +177,19 @@ IfVar "singleGenre" "true"
         IfNotOutput "GENRE"
             json_select "name"
             SayRest
+        Else
+			IfNotOutput "TMP_GENRE1"
+				OutputTo "TMP_GENRE1"
+				json_select "name"
+				SayRest
+			Else
+				IfNotOutput "TMP_GENRE2"
+					OutputTo "TMP_GENRE2"
+					json_select "name"
+					SayRest
         EndIf
+			EndIf
+		EndIf
     json_foreach_end
 Else
     IfOutput "GENRE"
@@ -185,6 +226,9 @@ SayRest
 json_unselect_object
 json_unselect_object
 
+OutputTo "RATING WMP"
+SayOutput "RATING"
+
 OutputTo "COMMENT"
 json_select "publisher_summary"
 KillTag "*"
@@ -206,7 +250,11 @@ json_select "release_date"
 SayRest
 
 OutputTo "ARTIST"
-SayOutput "ALBUMARTIST"
+IfVar  "singleAlbumArtist" "true"
+    SayOutput "ALBUMARTISTS"
+Else
+    SayOutput "ALBUMARTIST"
+EndIf
 IfVar "narratorInArtist" "true"
     Say ", "
     SayOutput "COMPOSER"
@@ -226,6 +274,15 @@ SayOutput "SERIES"
 
 OutputTo "MOVEMENT"
 SayOutput "SERIES-PART"
+
+
+OutputTo "LANGUAGE"
+json_select "language"
+SayRest
+
+OutputTo "COPYRIGHT"
+json_select "copyright"
+SayRest
 
 OutputTo "WWWAUDIOFILE"
 json "OFF"

@@ -1,0 +1,2 @@
+[AlbumUrl]=https://api.audible.com/1.0/catalog/products/%s?response_groups=category_ladders,contributors,media,product_desc,product_attrs,product_extended_attrs,rating,series,product_details&image_sizes=700,1000,500,100
+[Include]=Audible API ASIN.inc

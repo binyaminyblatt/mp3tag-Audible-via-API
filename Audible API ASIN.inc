@@ -6,8 +6,6 @@
 [Name]=Audible API
 [WordSeperator]=+
 [SearchBy]=ASIN||%ASIN%||%s
-[PreviewUrl]=https://www.audible.com/pd/%s
-[AlbumUrl]=https://api.audible.co.uk/1.0/catalog/products/%s?response_groups=category_ladders,contributors,media,product_desc,product_attrs,product_extended_attrs,rating,series,product_details&image_sizes=700,1000,500,100
 [Settings]=A&udible API#Settings….settings
 [Encoding]=url-utf-8
 [MinAppVersionMac]=1.8.6
@@ -209,10 +207,6 @@ IfNot ""
         SayOutput "COMPOSER"
     EndIf
 
-    OutputTo "WWWAUDIOFILE"
-    Say "https://www.audible.co.uk/pd/"
-    SayOutput "ASIN"
-
     OutputTo "DESCRIPTION"
     SayOutput "COMMENT"
 
@@ -236,4 +230,11 @@ IfNot ""
 	OutputTo "COPYRIGHT"
 	json_select "copyright"
 	SayRest
+
+    OutputTo "WWWAUDIOFILE"
+    json "OFF"
+    RegexpReplace "^.*" "%CurrentUrl%"
+    RegexpReplace ".*api\.audible\.(.+?)\/.*" "https://www.audible.$1/pd/"
+    SayRest
+    SayOutput "ASIN"
 EndIf
