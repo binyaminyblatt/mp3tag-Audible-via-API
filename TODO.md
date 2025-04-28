@@ -16,3 +16,4 @@
 ## Long Term TODO
 
 - Investigate if the Audible API is the  best way to get the data. (there is a free API `https://audimeta.de/api-docs/` that would handle most of the work as well as most of the parcing).
+  - If we do switch to audimeta we should look into Chapters taging.
