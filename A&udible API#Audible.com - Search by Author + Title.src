@@ -1,0 +1,3 @@
+[IndexUrl]=https://api.audible.com/1.0/catalog/products?response_groups=contributors,media,product_desc,product_attrs,product_extended_attrs,series&image_sizes=100&num_results=25&products_sort_by=Relevance&keywords=%s
+[AlbumUrl]=https://api.audible.com/1.0/catalog/products/
+[Include]=Audible API.inc

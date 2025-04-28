@@ -1,0 +1,58 @@
+{
+  "key": "audible api",
+  "title": "Audible API Settings",
+  "settings": [
+    {
+      "type": "bool",
+      "key": "narratorInArtist",
+      "title": "Add narrator to artist",
+      "description": "Enable to add the narrator to the artist field.",
+      "default": true
+    },
+    {
+      "type": "bool",
+      "key": "singleGenre",
+      "title": "Add single genre only",
+      "description": "Enable to add only the first genre.",
+      "default": false
+    },
+    {
+      "type": "string",
+      "key": "delimiter",
+      "title": "Delimiter for multiple values",
+      "description": "Choose the string to use as a delimiter.",
+      "choices": [
+        "\\\\",
+        ", ",
+        ";",
+        "/",
+        "|",
+        " "
+      ],
+      "default": "\\\\"
+    }
+  ],
+  "localizations": {
+    "de": [
+      {
+        "key": "audible api",
+        "title": "Audible API Einstellungen"
+      },
+      {
+        "key": "narratorInArtist",
+        "title": "Sprecher zu Interpreten hinzufügen",
+        "description": "Aktivieren um Sprecher zum Feld für Interpreten hinzuzufügen."
+      },
+      {
+        "key": "singleGenre",
+        "title": "Nur einzelne Genres hinzufügen",
+        "description": "Aktivieren um nur das erste Genre hinzuzufügen."
+      },
+      {
+        "key": "delimiter",
+        "title": "Trennzeichen für mehrere Werte",
+        "description": "Auswahl der Zeichenfolge, die als Trennzeichen für mehrere Werte verwendet werden soll."
+      }
+    ]
+  }
+}
