@@ -28,6 +28,7 @@ IfNot "0"
         Say "|"
 
         json_select "asin"
+        # need to fix this to work with all regions
         Say "https://www.audible.com/pd/"
         SayRest
         Say "|"
