@@ -11,7 +11,7 @@
 [Encoding]=url-utf-8
 [MinAppVersionMac]=1.8.6
 [MinAppVersionWin]=3.22
-[Version]=0.4.0
+[Version]=0.5.0
 
 [ParserScriptIndex]=...
 #debug "on" "audible-api-index.txt"
@@ -212,10 +212,6 @@ IfVar "narratorInArtist" "true"
     SayOutput "COMPOSER"
 EndIf
 
-OutputTo "WWWAUDIOFILE"
-Say "https://www.audible.com/pd/"
-SayOutput "ASIN"
-
 OutputTo "DESCRIPTION"
 SayOutput "COMMENT"
 
@@ -230,3 +226,10 @@ SayOutput "SERIES"
 
 OutputTo "MOVEMENT"
 SayOutput "SERIES-PART"
+
+OutputTo "WWWAUDIOFILE"
+json "OFF"
+RegexpReplace "^.*" "%CurrentUrl%"
+RegexpReplace ".*api\.audible\.(.+?)\/.*" "https://www.audible.$1/pd/"
+SayRest
+SayOutput "ASIN"

@@ -1,5 +1,10 @@
 # Changelog — Audible API Tag Source for Mp3tag
 
+## 0.5.0 (2025-04-16) @Florian
+- Added Tag Sources for audible.ca
+- Added Tag Sources for audible.fr
+- Fixed `WWWAUDIOFILE` to use locale-specific URL.
+
 ## 0.4.0 (2024-12-29) @Florian
 - Added Tag Sources for audible.co.uk
 

@@ -6,8 +6,8 @@
 [Name]=Audible API
 [WordSeperator]=+
 [SearchBy]=ASIN||%ASIN%||%s
-[PreviewUrl]=https://www.audible.com/pd/%s
-[AlbumUrl]=https://api.audible.com/1.0/catalog/products/%s?response_groups=category_ladders,contributors,media,product_desc,product_attrs,product_extended_attrs,rating,series&image_sizes=500,1000
+[PreviewUrl]=https://www.audible.fr/pd/%s
+[AlbumUrl]=https://api.audible.fr/1.0/catalog/products/%s?response_groups=category_ladders,contributors,media,product_desc,product_attrs,product_extended_attrs,rating,series&image_sizes=500,1000
 [Settings]=A&udible API#Settings….settings
 [Encoding]=url-utf-8
 [MinAppVersionMac]=1.8.6
@@ -163,7 +163,7 @@ IfNot ""
     EndIf
 
     OutputTo "WWWAUDIOFILE"
-    Say "https://www.audible.com/pd/"
+    Say "https://www.audible.fr/pd/"
     SayOutput "ASIN"
 
     OutputTo "DESCRIPTION"
