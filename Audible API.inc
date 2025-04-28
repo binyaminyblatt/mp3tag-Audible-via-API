@@ -34,7 +34,7 @@ IfNot "0"
 
         json_select "asin"
         SayRest
-        Say "?response_groups=category_ladders,contributors,media,product_desc,product_attrs,product_extended_attrs,rating,series&image_sizes=500,1000"
+        Say "?response_groups=category_ladders,contributors,media,product_desc,product_attrs,product_extended_attrs,rating,series,product_details&image_sizes=1000,500,100"
         Say "|"
 
         json_select "title"
@@ -102,6 +102,15 @@ SayRest
 OutputTo "SUBTITLE"
 json_select "subtitle"
 SayRest
+
+OutputTo "LANGUAGE"
+json_select "language"
+SayRest
+
+OutputTo "COPYRIGHT"
+json_select "copyright"
+SayRest
+
 
 # This is the code i edited since plex cant handle multple ALBUMARTIST's i moved it to ALBUMARTISTS and ALBUMARTIST is just the first author 
 # i added the setting singleAlbumArtist to make the to make ALBUMARTIST the first author for plex like apps and set the default to false for backwards compatibility
@@ -275,14 +284,6 @@ SayOutput "SERIES"
 OutputTo "MOVEMENT"
 SayOutput "SERIES-PART"
 
-
-OutputTo "LANGUAGE"
-json_select "language"
-SayRest
-
-OutputTo "COPYRIGHT"
-json_select "copyright"
-SayRest
 
 OutputTo "WWWAUDIOFILE"
 json "OFF"
