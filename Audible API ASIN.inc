@@ -60,6 +60,10 @@ IfNot ""
     json_select "format_type"
     SayRest
 
+    OutputTo "ISBN"
+    json_select "isbn"
+    SayRest
+
     # This is the code i edited since plex cant handle multple ALBUMARTIST's i moved it to ALBUMARTISTS and ALBUMARTIST is just the first author 
     # i added the setting singleAlbumArtist to make the to make ALBUMARTIST the first author for plex like apps and set the default to false for backwards compatibility
     IfVar "singleAlbumArtist" "true"
