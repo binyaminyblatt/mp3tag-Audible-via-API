@@ -12,8 +12,8 @@
     {
       "type": "bool",
       "key": "singleAlbumArtist",
-      "title": "Use single album artist for all album useful for plex because plex does not support multiple album artists",
-      "description": "Use single album artist for all album useful for plex because plex does not support multiple album artists",
+      "title": "Add single album artist only",
+      "description": "Enable to add only the first album artist and store complete list in ALBUMARTISTS.",
       "default": false
     },
     {
@@ -51,8 +51,13 @@
         "description": "Aktivieren um Sprecher zum Feld für Interpreten hinzuzufügen."
       },
       {
+        "key": "singleAlbumArtist",
+        "title": "Nur ersten Album-Interpret hinzufügen",
+        "description": "Aktivieren um nur den ersten Album-Interpret hinzuzufügen und gesamte Liste in ALBUMARTISTS zu speichern.."
+    },
+      {
         "key": "singleGenre",
-        "title": "Nur einzelne Genres hinzufügen",
+        "title": "Nur erstes Genre hinzufügen",
         "description": "Aktivieren um nur das erste Genre hinzuzufügen."
       },
       {

@@ -1,4 +1,5 @@
-[IndexUrl]=https://api.audible.de/1.0/catalog/products?response_groups=category_ladders,contributors,media,product_desc,product_attrs,product_extended_attrs,rating,series,product_details&image_sizes=700,1000,500,100&num_results=50&products_sort_by=Relevance&keywords=%s
+[IndexUrl]=https://api.audible.de/1.0/catalog/products?response_groups=contributors,media,product_desc,product_attrs,product_extended_attrs,series&image_sizes=100&num_results=50&products_sort_by=Relevance&keywords=%s
 [AlbumUrl]=https://api.audible.de/1.0/catalog/products/
-[SearchBy]=%artist% $regexp(%album%,'[- ]+cd ?\d+$',,1)
+[SearchBy]=%artist% $regexp(%album%,'[- ]+(cd|part) ?\d+$',,1)
+[Version]=0.6.0
 [Include]=Audible API.inc

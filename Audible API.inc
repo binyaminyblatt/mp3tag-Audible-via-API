@@ -10,10 +10,17 @@
 [Encoding]=url-utf-8
 [MinAppVersionMac]=1.8.6
 [MinAppVersionWin]=3.22
-[Version]=0.5.9
+[Version]=0.6.0
 
 [ParserScriptIndex]=...
 #debug "on" "audible-api-index.txt"
+
+OutputTo "WWW"
+RegexpReplace "^" "%CurrentUrl%-END_CURRENT_URL_MARKER"
+RegexpReplace "^https://api\.audible\.(.+?)\/" "https://www.audible.$1/pd/"
+SayUntil "1.0"
+RegexpReplace "^.*?-END_CURRENT_URL_MARKER" ""
+OutputTo "Output"
 
 replace "|" "$verticalBar()"
 json "ON" "current"
@@ -28,14 +35,13 @@ IfNot "0"
         Say "|"
 
         json_select "asin"
-        # need to fix this to work with all regions
-        Say "https://www.audible.com/pd/"
+        SayOutput "WWW"
         SayRest
         Say "|"
 
         json_select "asin"
         SayRest
-        Say "?response_groups=category_ladders,contributors,media,product_desc,product_attrs,product_extended_attrs,rating,series,product_details&image_sizes=1000,500,100"
+        Say "?response_groups=category_ladders,contributors,media,product_desc,product_attrs,product_extended_attrs,rating,series,product_details&image_sizes=1000,700,500"
         Say "|"
 
         json_select "title"
@@ -66,6 +72,8 @@ IfNot "0"
     json_foreach_end
 EndIf
 
+Set "WWW"
+
 
 [ParserScriptAlbum]=...
 #debug "on" "audible-api-album.txt"
@@ -81,11 +89,11 @@ json_select "1000"
 IfNot ""
     SayRest
 Else
-    json_select "500"
+    json_select "700"
     IfNot ""
         SayRest
     Else
-        json_select "100"
+        json_select "500"
         SayRest
     EndIf
 EndIf
@@ -116,7 +124,17 @@ OutputTo "EXPLICIT"
 json_select "is_adult_product"
 SayRest
 
-OutputTo "ABRIDGED"
+OutputTo "ITUNESADVISORY"
+json_select "is_adult_product"
+IfNot ""
+    If "0"
+        Say "2"
+    Else
+        Say "1"
+    EndIf
+EndIf
+
+OutputTo "FORMAT"
 json_select "format_type"
 SayRest
 
@@ -124,13 +142,14 @@ OutputTo "ISBN"
 json_select "isbn"
 SayRest
 
-
-# This is the code i edited since plex cant handle multple ALBUMARTIST's i moved it to ALBUMARTISTS and ALBUMARTIST is just the first author 
-# i added the setting singleAlbumArtist to make the to make ALBUMARTIST the first author for plex like apps and set the default to false for backwards compatibility
+# Useful for systems that don't support multiple album artists, e.g., Plex
 IfVar "singleAlbumArtist" "true"
-    OutputTo "ALBUMARTISTS"
-    json_select_many "authors" "name" ", "
-    SayRest
+    json_select_many_count "authors" "name"
+    IfGreater 1
+        OutputTo "ALBUMARTISTS"
+        json_select_many "authors" "name" ", "
+        SayRest
+    EndIf
 
     OutputTo "ALBUMARTIST"
     json_foreach "authors"
@@ -188,10 +207,6 @@ Else
     EndIf
 Endif
 
-
-KillTag "GENRE"
-KillTag "TMP_GENRE1"
-KillTag "TMP_GENRE2"
 OutputTo "GENRE"
 json_foreach "category_ladders"
 IfVar "singleGenre" "true"
@@ -200,18 +215,18 @@ IfVar "singleGenre" "true"
             json_select "name"
             SayRest
         Else
-			IfNotOutput "TMP_GENRE1"
-				OutputTo "TMP_GENRE1"
-				json_select "name"
-				SayRest
-			Else
-				IfNotOutput "TMP_GENRE2"
-					OutputTo "TMP_GENRE2"
-					json_select "name"
-					SayRest
+            IfNotOutput "TMP_GENRE1"
+                OutputTo "TMP_GENRE1"
+                json_select "name"
+                SayRest
+            Else
+                IfNotOutput "TMP_GENRE2"
+                    OutputTo "TMP_GENRE2"
+                    json_select "name"
+                    SayRest
+                EndIf
+            EndIf
         EndIf
-			EndIf
-		EndIf
     json_foreach_end
 Else
     IfOutput "GENRE"
@@ -272,8 +287,12 @@ json_select "release_date"
 SayRest
 
 OutputTo "ARTIST"
-IfVar  "singleAlbumArtist" "true"
-    SayOutput "ALBUMARTISTS"
+IfVar "singleAlbumArtist" "true"
+    IfOutput "ALBUMARTISTS"
+        SayOutput "ALBUMARTISTS"
+    Else
+        SayOutput "ALBUMARTIST"
+    EndIf
 Else
     SayOutput "ALBUMARTIST"
 EndIf
@@ -297,10 +316,9 @@ SayOutput "SERIES"
 OutputTo "MOVEMENT"
 SayOutput "SERIES-PART"
 
-
 OutputTo "WWWAUDIOFILE"
 json "OFF"
 RegexpReplace "^.*" "%CurrentUrl%"
-RegexpReplace ".*api\.audible\.(.+?)\/.*" "https://www.audible.$1/pd/"
+RegexpReplace "^https://api\.audible\.(.+?)\/.*" "https://www.audible.$1/pd/"
 SayRest
 SayOutput "ASIN"

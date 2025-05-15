@@ -10,7 +10,7 @@
 [Encoding]=url-utf-8
 [MinAppVersionMac]=1.8.6
 [MinAppVersionWin]=3.22
-[Version]=0.5.9
+[Version]=0.6.0
 
 [ParserScriptAlbum]=...
 #debug "on" "audible-api-album.txt"
@@ -20,233 +20,242 @@ replace "|" "$verticalBar()"
 json "ON" "current"
 json_select_object "product"
 
-json_select "title"
+OutputTo "coverurl"
+json_select_object "product_images"
+json_select "1000"
 IfNot ""
-
-    OutputTo "coverurl"
-	json_select_object "product_images"
-	json_select "1000"
-	IfNot ""
-		SayRest
-	Else
-		json_select "700"
-		IfNot ""
-			SayRest
-		Else
-			json_select "500"
-			SayRest
-		EndIf
-	EndIf
-	json_unselect_object
-
-    OutputTo "ASIN"
-    json_select "asin"
     SayRest
+Else
+    json_select "700"
+    IfNot ""
+        SayRest
+    Else
+        json_select "500"
+        SayRest
+    EndIf
+EndIf
+json_unselect_object
 
-    OutputTo "ALBUM"
-    json_select "title"
-    RegexpReplace "(.*?) \(Narrated by .*" "$1"
-    SayRest
+OutputTo "ASIN"
+json_select "asin"
+SayRest
 
-    OutputTo "SUBTITLE"
-    json_select "subtitle"
-    SayRest
+OutputTo "ALBUM"
+json_select "title"
+RegexpReplace "(.*?) \(Narrated by .*" "$1"
+SayRest
 
-    OutputTo "EXPLICIT"
-    json_select "is_adult_product"
-    SayRest
+OutputTo "SUBTITLE"
+json_select "subtitle"
+SayRest
 
-    OutputTo "ABRIDGED"
-    json_select "format_type"
-    SayRest
+OutputTo "LANGUAGE"
+json_select "language"
+SayRest
 
-    OutputTo "ISBN"
-    json_select "isbn"
-    SayRest
+OutputTo "COPYRIGHT"
+json_select "copyright"
+SayRest
 
-    # This is the code i edited since plex cant handle multple ALBUMARTIST's i moved it to ALBUMARTISTS and ALBUMARTIST is just the first author 
-    # i added the setting singleAlbumArtist to make the to make ALBUMARTIST the first author for plex like apps and set the default to false for backwards compatibility
-    IfVar "singleAlbumArtist" "true"
+OutputTo "EXPLICIT"
+json_select "is_adult_product"
+SayRest
+
+OutputTo "ITUNESADVISORY"
+json_select "is_adult_product"
+IfNot ""
+    If "0"
+        Say "2"
+    Else
+        Say "1"
+    EndIf
+EndIf
+
+OutputTo "FORMAT"
+json_select "format_type"
+SayRest
+
+OutputTo "ISBN"
+json_select "isbn"
+SayRest
+
+# Useful for systems that don't support multiple album artists, e.g., Plex
+IfVar "singleAlbumArtist" "true"
+    json_select_many_count "authors" "name"
+    IfGreater 1
         OutputTo "ALBUMARTISTS"
         json_select_many "authors" "name" ", "
         SayRest
-
-        OutputTo "ALBUMARTIST"
-        json_foreach "authors"
-            IfNotOutput "ALBUMARTIST"
-                json_select "name"
-                SayRest
-            EndIf
-        json_foreach_end
-    Else
-        OutputTo "ALBUMARTIST"
-        json_select_many "authors" "name" ", "
-        SayRest
     EndIf
 
-    OutputTo "COMPOSER"
-    json_select_many "narrators" "name" ", "
+    OutputTo "ALBUMARTIST"
+    json_foreach "authors"
+        IfNotOutput "ALBUMARTIST"
+            json_select "name"
+            SayRest
+        EndIf
+    json_foreach_end
+Else
+    OutputTo "ALBUMARTIST"
+    json_select_many "authors" "name" ", "
+    SayRest
+EndIf
+
+OutputTo "COMPOSER"
+json_select_many "narrators" "name" ", "
+SayRest
+
+json_select_many_count "series"
+IfNot ""
+    OutputTo "SHOWMOVEMENT"
+    say "1"
+
+    OutputTo "SERIES"
+    json_select_array "series" 1
+    json_select "title"
     SayRest
 
-    json_select_many_count "series"
-    IfNot ""
-        OutputTo "SHOWMOVEMENT"
-        say "1"
+    OutputTo "SERIES-PART"
+    json_select "sequence"
+    SayRest
 
-        OutputTo "SERIES"
-        json_select_array "series" 1
-        json_select "title"
-        SayRest
+    json_unselect_object
 
-        OutputTo "SERIES-PART"
-        json_select "sequence"
-        SayRest
+    OutputTo "CONTENTGROUP"
+    SayOutput "SERIES"
+    Say ", Book #"
+    SayOutput "SERIES-PART"
 
-        json_unselect_object
-
-        OutputTo "CONTENTGROUP"
-        SayOutput "SERIES"
-        Say ", Book #"
-        SayOutput "SERIES-PART"
-
+    OutputTo "ALBUMSORT"
+    SayOutput "SERIES"
+    Say " "
+    SayOutput "SERIES-PART"
+    Say " - "
+    SayOutput "ALBUM"
+Else
+    IfNotOutput "SUBTITLE"
         OutputTo "ALBUMSORT"
-        SayOutput "SERIES"
-        Say " "
-        SayOutput "SERIES-PART"
-        Say " - "
         SayOutput "ALBUM"
     Else
-        IfNotOutput "SUBTITLE"
-            OutputTo "ALBUMSORT"
-            SayOutput "ALBUM"
-        Else
-            OutputTo "ALBUMSORT"
-            SayOutput "ALBUM"
-            Say " - "
-            SayOutput "SUBTITLE"
-        EndIf
-    Endif
-
-    OutputTo "GENRE"
-    json_foreach "category_ladders"
-    IfVar "singleGenre" "true"
-        json_foreach "ladder"
-			IfNotOutput "GENRE"
-				json_select "name"
-				SayRest
-			Else
-				IfNotOutput "TMP_GENRE1"
-					OutputTo "TMP_GENRE1"
-					json_select "name"
-					SayRest
-				Else
-					IfNotOutput "TMP_GENRE2"
-						OutputTo "TMP_GENRE2"
-						json_select "name"
-						SayRest
-					EndIf
-				EndIf
-			EndIf
-		json_foreach_end
-    Else
-        IfOutput "GENRE"
-            IfVar "delimiter" "\\\\"
-                Say "\\\\"
-            EndIf
-            IfVar "delimiter" ", "
-                Say ", "
-            EndIf
-            IfVar "delimiter" ";"
-                Say ";"
-            EndIf
-            IfVar "delimiter" "/"
-                Say "/"
-            EndIf
-            IfVar "delimiter" "|"
-                Say "$verticalBar()"
-            EndIf
-            IfVar "delimiter" " "
-                Say " "
-            EndIf
-        EndIf
-        json_select_many "ladder" "name" " / "
-        SayRest
+        OutputTo "ALBUMSORT"
+        SayOutput "ALBUM"
+        Say " - "
+        SayOutput "SUBTITLE"
     EndIf
+Endif
+
+OutputTo "GENRE"
+json_foreach "category_ladders"
+IfVar "singleGenre" "true"
+    json_foreach "ladder"
+        IfNotOutput "GENRE"
+            json_select "name"
+            SayRest
+        Else
+            IfNotOutput "TMP_GENRE1"
+                OutputTo "TMP_GENRE1"
+                json_select "name"
+                SayRest
+            Else
+                IfNotOutput "TMP_GENRE2"
+                    OutputTo "TMP_GENRE2"
+                    json_select "name"
+                    SayRest
+                EndIf
+            EndIf
+        EndIf
     json_foreach_end
-    json_select_object "product"
-
-    OutputTo "RATING"
-    json_select_object "rating"
-    json_select_object "overall_distribution"
-    json_select "display_average_rating"
+Else
+    IfOutput "GENRE"
+        IfVar "delimiter" "\\\\"
+            Say "\\\\"
+        EndIf
+        IfVar "delimiter" ", "
+            Say ", "
+        EndIf
+        IfVar "delimiter" ";"
+            Say ";"
+        EndIf
+        IfVar "delimiter" "/"
+            Say "/"
+        EndIf
+        IfVar "delimiter" "|"
+            Say "$verticalBar()"
+        EndIf
+        IfVar "delimiter" " "
+            Say " "
+        EndIf
+    EndIf
+    json_select_many "ladder" "name" " / "
     SayRest
-    json_unselect_object
-    json_unselect_object
-	
-	OutputTo "RATING WMP"
-	SayOutput "RATING"
+EndIf
+json_foreach_end
+json_select_object "product"
 
-    OutputTo "COMMENT"
-    json_select "publisher_summary"
-    KillTag "*"
-    Unspace
-    RegexpReplace "  +" " "
-    Replace " ," ","
-    SayRest
+OutputTo "RATING"
+json_select_object "rating"
+json_select_object "overall_distribution"
+json_select "display_average_rating"
+SayRest
+json_unselect_object
+json_unselect_object
 
-    OutputTo "PUBLISHER"
-    json_select "publisher_name"
-    SayRest
+OutputTo "RATING WMP"
+SayOutput "RATING"
 
-    OutputTo "YEAR"
-    json_select "release_date"
-    SayNChars 4
+OutputTo "COMMENT"
+json_select "publisher_summary"
+KillTag "*"
+Unspace
+RegexpReplace "  +" " "
+Replace " ," ","
+SayRest
 
-    OutputTo "RELEASETIME"
-    json_select "release_date"
-    SayRest
+OutputTo "PUBLISHER"
+json_select "publisher_name"
+SayRest
 
-    OutputTo "ARTIST"
-    # once again this is the code i edited since plex cant handle multple ALBUMARTIST's i moved it to ALBUMARTISTS and ALBUMARTIST is just the first author
-    # i added the setting singleAlbumArtist to make the to make ALBUMARTIST the first author for plex like apps and set the default to false for backwards compatibility
-    IfVar  "singleAlbumArtist" "true"
+OutputTo "YEAR"
+json_select "release_date"
+SayNChars 4
+
+OutputTo "RELEASETIME"
+json_select "release_date"
+SayRest
+
+OutputTo "ARTIST"
+IfVar "singleAlbumArtist" "true"
+    IfOutput "ALBUMARTISTS"
         SayOutput "ALBUMARTISTS"
     Else
         SayOutput "ALBUMARTIST"
     EndIf
-    IfVar "narratorInArtist" "true"
-        Say ", "
-        SayOutput "COMPOSER"
-    EndIf
-
-    OutputTo "DESCRIPTION"
-    SayOutput "COMMENT"
-
-    OutputTo "ITUNESMEDIATYPE"
-    Say "Audiobook"
-
-    OutputTo "ITUNESGAPLESS"
-    Say "1"
-
-    OutputTo "MOVEMENTNAME"
-    SayOutput "SERIES"
-
-    OutputTo "MOVEMENT"
-    SayOutput "SERIES-PART"
-	
-	
-	OutputTo "LANGUAGE"
-	json_select "language"
-	SayRest
-
-	OutputTo "COPYRIGHT"
-	json_select "copyright"
-	SayRest
-
-    OutputTo "WWWAUDIOFILE"
-    json "OFF"
-    RegexpReplace "^.*" "%CurrentUrl%"
-    RegexpReplace ".*api\.audible\.(.+?)\/.*" "https://www.audible.$1/pd/"
-    SayRest
-    SayOutput "ASIN"
+Else
+    SayOutput "ALBUMARTIST"
 EndIf
+IfVar "narratorInArtist" "true"
+    Say ", "
+    SayOutput "COMPOSER"
+EndIf
+
+OutputTo "DESCRIPTION"
+SayOutput "COMMENT"
+
+OutputTo "ITUNESMEDIATYPE"
+Say "Audiobook"
+
+OutputTo "ITUNESGAPLESS"
+Say "1"
+
+OutputTo "MOVEMENTNAME"
+SayOutput "SERIES"
+
+OutputTo "MOVEMENT"
+SayOutput "SERIES-PART"
+
+OutputTo "WWWAUDIOFILE"
+json "OFF"
+RegexpReplace "^.*" "%CurrentUrl%"
+RegexpReplace "^https://api\.audible\.(.+?)\/.*" "https://www.audible.$1/pd/"
+SayRest
+SayOutput "ASIN"
