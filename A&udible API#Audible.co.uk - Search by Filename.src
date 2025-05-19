@@ -1,5 +1,5 @@
 [IndexUrl]=https://api.audible.co.uk/1.0/catalog/products?response_groups=contributors,media,product_desc,product_attrs,product_extended_attrs,series&image_sizes=100&num_results=50&products_sort_by=Relevance&keywords=%s
 [AlbumUrl]=https://api.audible.co.uk/1.0/catalog/products/
 [SearchBy]=$regexp(%_filename%,'[- ]+(cd|part) ?\d+$',,1)
-[Version]=0.6.0
+[Version]=0.6.1
 [Include]=Audible API.inc

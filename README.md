@@ -6,6 +6,10 @@ This Audible Tag Source allows for searching audiobooks via the external Audible
 
 https://community.mp3tag.de/t/ws-audible-via-api/64347
 
+## Source
+
+https://github.com/fheidenreich/mp3tag-tag-sources/
+
 ## Installation
 
 Requires Mp3tag v3.22 or Mp3tag for Mac v1.8.6.

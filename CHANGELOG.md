@@ -1,5 +1,8 @@
 # Changelog — Audible API Tag Source for Mp3tag
 
+## 0.6.1 (2025-05-16) @Florian
+- Changed to filter non-author roles (e.g., translators) from list of authors.
+
 ## 0.6.0 (2025-05-15) @bblatt @Florian
 - Added support for field `COPYRIGHT`.
 - Added support for field `EXPLICIT` and `ITUNESADVISORY`.

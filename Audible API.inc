@@ -10,7 +10,7 @@
 [Encoding]=url-utf-8
 [MinAppVersionMac]=1.8.6
 [MinAppVersionWin]=3.22
-[Version]=0.6.0
+[Version]=0.6.1
 
 [ParserScriptIndex]=...
 #debug "on" "audible-api-index.txt"
@@ -49,7 +49,21 @@ IfNot "0"
         SayRest
         Say "|"
 
-        json_select_many "authors" "name" ", "
+        OutputTo "AUTHORS"
+        json_foreach "authors"
+            json_select "asin"
+            IfNot ""
+                IfOutput "AUTHORS"
+                    Say ", "
+                EndIf
+                json_select "name"
+                SayRest
+            EndIf
+        json_foreach_end
+        OutputTo "Output"
+        SayOutput "AUTHORS"
+        Set "AUTHORS"
+
         SayRest
         Say "|"
 
@@ -144,24 +158,43 @@ SayRest
 
 # Useful for systems that don't support multiple album artists, e.g., Plex
 IfVar "singleAlbumArtist" "true"
-    json_select_many_count "authors" "name"
+    json_select_many_count "authors" "asin"
     IfGreater 1
         OutputTo "ALBUMARTISTS"
-        json_select_many "authors" "name" ", "
-        SayRest
+        json_foreach "authors"
+            json_select "asin"
+            IfNot ""
+                IfOutput "ALBUMARTISTS"
+                    Say ", "
+                EndIf
+                json_select "name"
+                SayRest
+            EndIf
+        json_foreach_end
     EndIf
 
     OutputTo "ALBUMARTIST"
     json_foreach "authors"
         IfNotOutput "ALBUMARTIST"
-            json_select "name"
-            SayRest
+            json_select "asin"
+            IfNot ""
+                json_select "name"
+                SayRest
+            EndIf
         EndIf
     json_foreach_end
 Else
     OutputTo "ALBUMARTIST"
-    json_select_many "authors" "name" ", "
-    SayRest
+    json_foreach "authors"
+        json_select "asin"
+        IfNot ""
+            IfOutput "ALBUMARTIST"
+                Say ", "
+            EndIf
+            json_select "name"
+            SayRest
+        EndIf
+    json_foreach_end
 EndIf
 
 OutputTo "COMPOSER"

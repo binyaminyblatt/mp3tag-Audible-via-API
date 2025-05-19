@@ -1,3 +1,3 @@
 [AlbumUrl]=https://api.audible.es/1.0/catalog/products/%s?response_groups=category_ladders,contributors,media,product_desc,product_attrs,product_extended_attrs,rating,series,product_details&image_sizes=1000,700,500
-[Version]=0.6.0
+[Version]=0.6.1
 [Include]=Audible API ASIN.inc
